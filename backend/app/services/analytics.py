@@ -6,7 +6,24 @@ from typing import List, Dict, Any
 
 import numpy as np
 import pandas as pd
-from scipy import stats as scipy_stats
+
+try:
+    from scipy import stats as scipy_stats
+    def calc_skew(arr):
+        return float(scipy_stats.skew(arr))
+    def calc_kurt(arr):
+        return float(scipy_stats.kurtosis(arr))
+except ImportError:
+    def calc_skew(arr):
+        if len(arr) < 3: return 0.0
+        m = np.mean(arr)
+        s = np.std(arr)
+        return float(np.mean(((arr - m) / s) ** 3)) if s > 0 else 0.0
+    def calc_kurt(arr):
+        if len(arr) < 4: return 0.0
+        m = np.mean(arr)
+        s = np.std(arr)
+        return float(np.mean(((arr - m) / s) ** 4) - 3.0) if s > 0 else 0.0
 
 from app.services.data_processor import (
     normalize_actuals,
@@ -160,8 +177,8 @@ def compute_error_distribution(
     stats = {
         "mean": round(float(np.mean(errors)), 2),
         "std": round(float(np.std(errors, ddof=1)) if len(errors) > 1 else 0.0, 2),
-        "skewness": round(float(scipy_stats.skew(errors)), 4),
-        "kurtosis": round(float(scipy_stats.kurtosis(errors)), 4),
+        "skewness": round(calc_skew(errors), 4),
+        "kurtosis": round(calc_kurt(errors), 4),
         "min": round(float(np.min(errors)), 2),
         "max": round(float(np.max(errors)), 2),
         "median": round(float(np.median(errors)), 2),

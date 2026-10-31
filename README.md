@@ -6,8 +6,9 @@ Built for the UK day-ahead electricity market, WindSight helps traders understan
 
 ## 🔗 Live Application
 
-- **Frontend**: [Deployed on Vercel](#) *(link to be updated after deployment)*
-- **Backend API**: [Deployed on Render](#) *(link to be updated after deployment)*
+- **Live Platform**: [https://modest-faraday-nine.vercel.app](https://modest-faraday-nine.vercel.app)
+- **Interactive API Documentation (Swagger)**: [https://modest-faraday-nine.vercel.app/docs](https://modest-faraday-nine.vercel.app/docs)
+- **API Health Check**: [https://modest-faraday-nine.vercel.app/health](https://modest-faraday-nine.vercel.app/health)
 
 ## 📁 Project Structure
 
