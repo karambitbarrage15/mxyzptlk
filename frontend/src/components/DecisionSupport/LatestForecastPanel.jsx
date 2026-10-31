@@ -1,18 +1,18 @@
 import { useState } from 'react'
-import { formatMW, formatDateTime, formatTime } from '../../utils/formatters'
+import { formatMW, formatDateTime } from '../../utils/formatters'
 
 export default function LatestForecastPanel({ forecasts, isLoading }) {
   const [searchTerm, setSearchTerm] = useState('')
   const [page, setPage] = useState(1)
-  const pageSize = 15
+  const pageSize = 12
 
   if (isLoading) {
     return (
       <div className="card">
-        <h3 className="text-lg font-semibold text-gray-200 mb-4">Latest Available Forecasts</h3>
-        <div className="animate-pulse space-y-3">
+        <h3 className="text-sm font-semibold text-white mb-3">Latest Forecast Publication Queue</h3>
+        <div className="animate-pulse space-y-2">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="h-8 bg-gray-700/50 rounded" />
+            <div key={i} className="h-7 bg-[#242424] rounded" />
           ))}
         </div>
       </div>
@@ -36,46 +36,46 @@ export default function LatestForecastPanel({ forecasts, isLoading }) {
 
   return (
     <div className="card">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-3 border-b border-[#242424]">
         <div>
-          <h3 className="text-lg font-semibold text-gray-200">Latest Available Forecasts</h3>
-          <p className="text-xs text-gray-400 mt-1">
-            Most recent forecast revision per half-hour settlement period
+          <h3 className="text-sm font-semibold text-white">Latest Forecast Publication Queue</h3>
+          <p className="text-xs text-zinc-500 font-mono mt-0.5">
+            Most recent model revision published per settlement delivery period
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <input
             type="text"
-            placeholder="Search date/time..."
+            placeholder="Search timestamp..."
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value)
               setPage(1)
             }}
-            className="bg-gray-800 border border-gray-600 rounded-lg px-3 py-1.5 text-xs text-gray-200 placeholder-gray-500 focus:outline-none focus:border-blue-500"
+            className="bg-[#141414] border border-[#2a2a2a] rounded-md px-2.5 py-1 text-xs text-zinc-200 font-mono focus:border-[#3ECF8E] focus:outline-none focus:ring-1 focus:ring-[#3ECF8E]"
           />
-          <span className="text-xs text-gray-400 whitespace-nowrap">
+          <span className="text-[11px] font-mono text-zinc-400 whitespace-nowrap">
             {filtered.length} periods
           </span>
         </div>
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto rounded border border-[#262626]">
         <table>
           <thead>
             <tr>
-              <th>Target Period (Delivery)</th>
-              <th>Published At</th>
-              <th>Lead Time</th>
+              <th>Target Period</th>
+              <th>Publish Time</th>
+              <th>Lead Horizon</th>
               <th>Forecast (MW)</th>
-              <th>Status</th>
+              <th>Regime</th>
             </tr>
           </thead>
           <tbody>
             {paginated.length === 0 ? (
               <tr>
-                <td colSpan={5} className="text-center text-gray-500 py-8">
-                  No forecasts found
+                <td colSpan={5} className="text-center text-zinc-500 py-6 font-mono text-xs">
+                  No records matching filter
                 </td>
               </tr>
             ) : (
@@ -85,33 +85,33 @@ export default function LatestForecastPanel({ forecasts, isLoading }) {
                 const leadHours = Math.max(0, (start - pub) / (1000 * 60 * 60)).toFixed(1)
 
                 return (
-                  <tr key={idx}>
-                    <td className="font-mono text-xs text-gray-200">
+                  <tr key={idx} className="font-mono text-xs">
+                    <td className="text-zinc-300 font-medium">
                       {formatDateTime(item.startTime)}
                     </td>
-                    <td className="font-mono text-xs text-gray-400">
+                    <td className="text-zinc-500">
                       {formatDateTime(item.publishTime)}
                     </td>
                     <td>
-                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-800 text-gray-300 border border-gray-700">
-                        {leadHours}h ahead
+                      <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] bg-[#141414] text-zinc-300 border border-[#2a2a2a]">
+                        {leadHours}h
                       </span>
                     </td>
-                    <td className="font-mono font-semibold text-blue-400">
+                    <td className="font-semibold text-[#38BDF8]">
                       {formatMW(item.generation)}
                     </td>
                     <td>
                       {item.generation > 12000 ? (
-                        <span className="text-xs px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800">
-                          High Wind
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-[#3ECF8E] border border-emerald-500/20 font-medium">
+                          High
                         </span>
                       ) : item.generation > 6000 ? (
-                        <span className="text-xs px-2 py-0.5 rounded bg-blue-950 text-blue-400 border border-blue-800">
-                          Moderate Wind
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-sky-500/10 text-sky-400 border border-sky-500/20 font-medium">
+                          Normal
                         </span>
                       ) : (
-                        <span className="text-xs px-2 py-0.5 rounded bg-amber-950 text-amber-400 border border-amber-800">
-                          Low Wind
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 font-medium">
+                          Low
                         </span>
                       )}
                     </td>
@@ -124,22 +124,22 @@ export default function LatestForecastPanel({ forecasts, isLoading }) {
       </div>
 
       {totalPages > 1 && (
-        <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-800 text-xs text-gray-400">
+        <div className="flex items-center justify-between mt-3 pt-3 border-t border-[#242424] text-xs font-mono text-zinc-500">
           <span>
             Page {currentPage} of {totalPages}
           </span>
-          <div className="flex gap-2">
+          <div className="flex gap-1.5">
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={currentPage === 1}
-              className="px-3 py-1 bg-gray-800 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed rounded text-gray-300 border border-gray-700"
+              className="btn-supabase-secondary text-xs disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              Previous
+              Prev
             </button>
             <button
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
-              className="px-3 py-1 bg-gray-800 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed rounded text-gray-300 border border-gray-700"
+              className="btn-supabase-secondary text-xs disabled:opacity-40 disabled:cursor-not-allowed"
             >
               Next
             </button>

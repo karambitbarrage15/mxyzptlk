@@ -20,21 +20,21 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      {/* Supabase-style Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#242424]">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">Executive Dashboard</h1>
-          <p className="text-sm text-gray-400 mt-1">
-            UK National Wind Generation Outturn vs Elexon WINDFOR Forecasts &bull; January 2026 Evaluation
+          <h1 className="text-xl font-semibold text-white tracking-tight">Overview</h1>
+          <p className="text-xs text-zinc-400 mt-0.5 font-mono">
+            Elexon BMRS Wind Power Actuals (FUELHH) vs Forecasts (WINDFOR) • January 2026
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            Elexon BMRS Stream Active
+          <span className="badge-supabase font-mono">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#3ECF8E] animate-pulse" />
+            Live Feed Verified
           </span>
-          <span className="text-xs text-gray-500 border border-gray-800 rounded-lg px-2.5 py-1">
-            1,488 Settlement Periods
+          <span className="text-[11px] font-mono text-zinc-400 border border-[#282828] bg-[#171717] rounded-md px-2.5 py-1">
+            1,488 Periods
           </span>
         </div>
       </div>
@@ -44,7 +44,7 @@ export default function DashboardPage() {
 
       {/* Error state */}
       {(metricsError || vsActualError) && (
-        <div className="p-4 bg-red-950/40 border border-red-800 rounded-xl text-red-200 text-sm">
+        <div className="p-3.5 bg-rose-950/30 border border-rose-800/50 rounded-md text-rose-300 text-xs font-mono">
           Failed to load live data: {metricsError?.message || vsActualError?.message}
         </div>
       )}

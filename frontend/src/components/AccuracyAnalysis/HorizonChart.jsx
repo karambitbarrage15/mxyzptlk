@@ -1,4 +1,4 @@
-import Plot from 'react-plotly.js'
+import Plot from '../Common/Plot'
 import { plotlyDarkLayout, plotlyConfig } from '../../utils/formatters'
 
 export default function HorizonChart({ data, isLoading }) {
@@ -13,7 +13,7 @@ export default function HorizonChart({ data, isLoading }) {
   if (!data || !data.hours_ahead || data.hours_ahead.length === 0) {
     return (
       <div className="card flex items-center justify-center h-80">
-        <p className="text-gray-500 text-sm">No horizon analysis data available</p>
+        <p className="text-zinc-500 text-xs font-mono">No horizon analysis data available</p>
       </div>
     )
   }
@@ -26,11 +26,11 @@ export default function HorizonChart({ data, isLoading }) {
       name: 'RMSE',
       marker: {
         color: data.rmse?.map((v) =>
-          v < 300 ? '#10b981' : v < 500 ? '#f59e0b' : '#ef4444'
+          v < 1800 ? '#3ECF8E' : v < 2400 ? '#F5A623' : '#F87171'
         ),
         opacity: 0.85,
       },
-      hovertemplate: '<b>%{x}h ahead</b><br>RMSE: %{y:.1f} MW<extra></extra>',
+      hovertemplate: '<b>%{x}h Lead Time</b><br>RMSE: <b>%{y:.1f} MW</b><extra></extra>',
     },
   ]
 
@@ -41,48 +41,40 @@ export default function HorizonChart({ data, isLoading }) {
       type: 'scatter',
       mode: 'lines+markers',
       name: 'MAE',
-      line: { color: '#3b82f6', width: 2 },
-      marker: { size: 6 },
-      hovertemplate: '<b>%{x}h ahead</b><br>MAE: %{y:.1f} MW<extra></extra>',
+      line: { color: '#38BDF8', width: 2 },
+      marker: { size: 5, color: '#38BDF8' },
+      hovertemplate: '<b>%{x}h Lead Time</b><br>MAE: <b>%{y:.1f} MW</b><extra></extra>',
     })
   }
 
   const layout = {
     ...plotlyDarkLayout,
+    height: 310,
     title: {
-      text: 'Forecast Accuracy by Lead Time',
-      font: { color: '#e5e7eb', size: 14 },
-      x: 0,
-      xanchor: 'left',
+      text: 'Error vs Lead Time Horizon',
+      font: { color: '#ededed', size: 12 },
     },
     xaxis: {
       ...plotlyDarkLayout.xaxis,
-      title: { text: 'Hours Ahead', font: { color: '#9ca3af', size: 11 } },
-      dtick: data.hours_ahead.length > 20 ? 4 : 1,
+      title: { text: 'Forecast Horizon (Hours Ahead)', font: { size: 10, color: '#8b949e' } },
     },
     yaxis: {
       ...plotlyDarkLayout.yaxis,
-      title: { text: 'Error (MW)', font: { color: '#9ca3af', size: 11 } },
+      title: { text: 'Error (MW)', font: { size: 10, color: '#8b949e' } },
     },
     legend: {
-      ...plotlyDarkLayout.legend,
       orientation: 'h',
-      y: 1.12,
+      y: 1.15,
+      x: 0,
+      font: { color: '#ededed', size: 10 },
     },
-    height: 320,
-    bargap: 0.15,
   }
 
   return (
     <div className="card">
-      <Plot
-        data={traces}
-        layout={layout}
-        config={plotlyConfig}
-        className="w-full"
-        useResizeHandler
-        style={{ width: '100%', height: '100%' }}
-      />
+      <div className="w-full">
+        <Plot data={traces} layout={layout} config={plotlyConfig} useResizeHandler className="w-full" />
+      </div>
     </div>
   )
 }

@@ -1,4 +1,4 @@
-import Plot from 'react-plotly.js'
+import Plot from '../Common/Plot'
 import { plotlyDarkLayout, plotlyConfig } from '../../utils/formatters'
 
 export default function ErrorHeatmap({ data, isLoading }) {
@@ -13,17 +13,17 @@ export default function ErrorHeatmap({ data, isLoading }) {
   if (!data || !data.hours || data.hours.length === 0) {
     return (
       <div className="card flex items-center justify-center h-80">
-        <p className="text-gray-500 text-sm">No hourly error data available</p>
+        <p className="text-zinc-500 text-xs font-mono">No hourly error data available</p>
       </div>
     )
   }
 
-  // Color the bars based on error magnitude and direction
+  // Color the bars with Supabase palette
   const colors = data.mean_error?.map((v) => {
-    if (v > 100) return '#ef4444'
-    if (v > 0) return '#f97316'
-    if (v > -100) return '#06b6d4'
-    return '#3b82f6'
+    if (v > 1000) return '#F87171'
+    if (v > 0) return '#F5A623'
+    if (v > -500) return '#3ECF8E'
+    return '#38BDF8'
   })
 
   const traces = [
@@ -31,84 +31,58 @@ export default function ErrorHeatmap({ data, isLoading }) {
       x: data.hours,
       y: data.mean_error,
       type: 'bar',
-      name: 'Mean Error',
+      name: 'Mean Error (Bias)',
       marker: {
         color: colors,
         opacity: 0.85,
       },
-      hovertemplate: '<b>Hour %{x}:00</b><br>Mean Error: %{y:.1f} MW<extra></extra>',
+      hovertemplate: '<b>Hour %{x}:00</b><br>Mean Bias: <b>%{y:.1f} MW</b><extra></extra>',
     },
   ]
 
-  // Add MAE line if available
+  // Add RMSE if available
   if (data.mae) {
     traces.push({
       x: data.hours,
       y: data.mae,
       type: 'scatter',
       mode: 'lines+markers',
-      name: 'MAE',
-      line: { color: '#a855f7', width: 2 },
-      marker: { size: 5 },
-      yaxis: 'y2',
-      hovertemplate: '<b>Hour %{x}:00</b><br>MAE: %{y:.1f} MW<extra></extra>',
+      name: 'RMSE',
+      line: { color: '#38BDF8', width: 1.5, dash: 'dot' },
+      marker: { size: 4, color: '#38BDF8' },
+      hovertemplate: '<b>Hour %{x}:00</b><br>RMSE: <b>%{y:.1f} MW</b><extra></extra>',
     })
   }
 
   const layout = {
     ...plotlyDarkLayout,
+    height: 310,
     title: {
-      text: 'Error by Hour of Day',
-      font: { color: '#e5e7eb', size: 14 },
-      x: 0,
-      xanchor: 'left',
+      text: 'Diurnal Error Profile by Hour of Day',
+      font: { color: '#ededed', size: 12 },
     },
     xaxis: {
       ...plotlyDarkLayout.xaxis,
-      title: { text: 'Hour of Day', font: { color: '#9ca3af', size: 11 } },
+      title: { text: 'Hour of Day (UTC)', font: { size: 10, color: '#8b949e' } },
       dtick: 2,
-      tick0: 0,
     },
     yaxis: {
       ...plotlyDarkLayout.yaxis,
-      title: { text: 'Mean Error (MW)', font: { color: '#9ca3af', size: 11 } },
+      title: { text: 'MW Error', font: { size: 10, color: '#8b949e' } },
     },
-    yaxis2: data.mae ? {
-      ...plotlyDarkLayout.yaxis,
-      title: { text: 'MAE (MW)', font: { color: '#a855f7', size: 11 } },
-      overlaying: 'y',
-      side: 'right',
-      gridcolor: 'transparent',
-    } : undefined,
     legend: {
-      ...plotlyDarkLayout.legend,
       orientation: 'h',
-      y: 1.12,
+      y: 1.15,
+      x: 0,
+      font: { color: '#ededed', size: 10 },
     },
-    height: 320,
-    bargap: 0.1,
-    shapes: [
-      {
-        type: 'line',
-        x0: -0.5,
-        x1: 23.5,
-        y0: 0,
-        y1: 0,
-        line: { color: '#6b7280', width: 1, dash: 'dash' },
-      },
-    ],
   }
 
   return (
     <div className="card">
-      <Plot
-        data={traces}
-        layout={layout}
-        config={plotlyConfig}
-        className="w-full"
-        useResizeHandler
-        style={{ width: '100%', height: '100%' }}
-      />
+      <div className="w-full">
+        <Plot data={traces} layout={layout} config={plotlyConfig} useResizeHandler className="w-full" />
+      </div>
     </div>
   )
 }

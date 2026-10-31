@@ -69,10 +69,10 @@ export function formatTime(dateStr) {
 }
 
 /**
- * Get color class based on metric value thresholds
+ * Get color class based on metric value thresholds (Supabase Theme)
  */
 export function getMetricColor(metricName, value) {
-  if (value == null) return 'text-gray-400'
+  if (value == null) return 'text-zinc-500'
 
   const thresholds = {
     mae: { good: 200, warn: 500 },
@@ -84,52 +84,58 @@ export function getMetricColor(metricName, value) {
   }
 
   const t = thresholds[metricName]
-  if (!t) return 'text-gray-100'
+  if (!t) return 'text-zinc-100'
 
   if (metricName === 'correlation') {
-    if (value >= t.good) return 'text-emerald-400'
+    if (value >= t.good) return 'text-[#3ECF8E]'
     if (value >= t.warn) return 'text-amber-400'
-    return 'text-red-400'
+    return 'text-rose-400'
   }
 
   if (metricName === 'bias') {
     const absVal = Math.abs(value)
-    if (absVal <= t.good) return 'text-emerald-400'
+    if (absVal <= t.good) return 'text-[#3ECF8E]'
     if (absVal <= t.warn) return 'text-amber-400'
-    return 'text-red-400'
+    return 'text-rose-400'
   }
 
-  if (value <= t.good) return 'text-emerald-400'
+  if (value <= t.good) return 'text-[#3ECF8E]'
   if (value <= t.warn) return 'text-amber-400'
-  return 'text-red-400'
+  return 'text-rose-400'
 }
 
 /**
- * Standard Plotly dark theme layout defaults
+ * Standard Plotly dark theme layout defaults (Supabase Theme)
  */
 export const plotlyDarkLayout = {
   paper_bgcolor: 'rgba(0,0,0,0)',
   plot_bgcolor: 'rgba(0,0,0,0)',
-  font: { color: '#d1d5db', size: 12 },
+  font: {
+    color: '#8b949e',
+    family: 'Inter, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif',
+    size: 11,
+  },
   xaxis: {
-    gridcolor: '#374151',
-    linecolor: '#4b5563',
-    zerolinecolor: '#4b5563',
+    gridcolor: '#222222',
+    linecolor: '#282828',
+    zerolinecolor: '#282828',
+    tickfont: { color: '#8b949e', size: 10 },
   },
   yaxis: {
-    gridcolor: '#374151',
-    linecolor: '#4b5563',
-    zerolinecolor: '#4b5563',
+    gridcolor: '#222222',
+    linecolor: '#282828',
+    zerolinecolor: '#282828',
+    tickfont: { color: '#8b949e', size: 10 },
   },
-  margin: { l: 60, r: 30, t: 40, b: 50 },
+  margin: { l: 55, r: 25, t: 40, b: 45 },
   legend: {
     bgcolor: 'rgba(0,0,0,0)',
-    font: { color: '#d1d5db' },
+    font: { color: '#ededed', size: 11 },
   },
   hoverlabel: {
-    bgcolor: '#1f2937',
-    bordercolor: '#4b5563',
-    font: { color: '#f3f4f6' },
+    bgcolor: '#171717',
+    bordercolor: '#333333',
+    font: { color: '#ededed', size: 11 },
   },
 }
 

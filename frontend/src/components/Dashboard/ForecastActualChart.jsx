@@ -1,4 +1,4 @@
-import Plot from 'react-plotly.js'
+import Plot from '../Common/Plot'
 import { plotlyDarkLayout, plotlyConfig } from '../../utils/formatters'
 
 export default function ForecastActualChart({ data, isLoading }) {
@@ -7,7 +7,7 @@ export default function ForecastActualChart({ data, isLoading }) {
       <div className="card flex items-center justify-center h-96">
         <div className="text-center">
           <div className="spinner mx-auto mb-3" />
-          <p className="text-gray-500 text-sm">Loading chart data...</p>
+          <p className="text-zinc-500 text-xs font-mono">Loading outturn vs forecast streams...</p>
         </div>
       </div>
     )
@@ -16,7 +16,7 @@ export default function ForecastActualChart({ data, isLoading }) {
   if (!data || !data.timestamps || data.timestamps.length === 0) {
     return (
       <div className="card flex items-center justify-center h-96">
-        <p className="text-gray-500">No forecast vs actual data available</p>
+        <p className="text-zinc-500 text-sm font-mono">No forecast vs actual data available</p>
       </div>
     )
   }
@@ -27,74 +27,80 @@ export default function ForecastActualChart({ data, isLoading }) {
       y: data.actuals,
       type: 'scatter',
       mode: 'lines',
-      name: 'Actual Generation',
-      line: { color: '#10b981', width: 1.5 },
-      hovertemplate: '<b>Actual</b><br>%{x}<br>%{y:.0f} MW<extra></extra>',
+      name: 'Actual Outturn (FUELHH)',
+      line: { color: '#3ECF8E', width: 2 },
+      hovertemplate: '<b>Actual Outturn</b><br>%{x}<br><b>%{y:.0f} MW</b><extra></extra>',
     },
     {
       x: data.timestamps,
       y: data.forecasts,
       type: 'scatter',
       mode: 'lines',
-      name: 'Forecast',
-      line: { color: '#3b82f6', width: 1.5 },
-      hovertemplate: '<b>Forecast</b><br>%{x}<br>%{y:.0f} MW<extra></extra>',
+      name: 'Latest Forecast (WINDFOR)',
+      line: { color: '#38BDF8', width: 1.5, dash: 'solid' },
+      hovertemplate: '<b>Wind Forecast</b><br>%{x}<br><b>%{y:.0f} MW</b><extra></extra>',
     },
   ]
 
-  // Add error area if both exist
+  // Add subtle error band
   if (data.actuals && data.forecasts) {
     traces.push({
       x: [...data.timestamps, ...[...data.timestamps].reverse()],
       y: [...data.actuals, ...[...data.forecasts].reverse()],
       fill: 'toself',
-      fillcolor: 'rgba(249, 115, 22, 0.08)',
+      fillcolor: 'rgba(62, 207, 142, 0.07)',
       line: { color: 'transparent' },
       type: 'scatter',
-      name: 'Error Band',
-      showlegend: false,
+      name: 'Volumetric Error Gap',
+      showlegend: true,
       hoverinfo: 'skip',
     })
   }
 
   const layout = {
     ...plotlyDarkLayout,
-    title: {
-      text: 'Forecast vs Actual Wind Generation — January 2026',
-      font: { color: '#e5e7eb', size: 16 },
-      x: 0,
-      xanchor: 'left',
-    },
+    height: 400,
+    margin: { l: 55, r: 25, t: 30, b: 40 },
     xaxis: {
       ...plotlyDarkLayout.xaxis,
-      title: { text: 'Date', font: { color: '#9ca3af' } },
       type: 'date',
-      rangeslider: { visible: true, bgcolor: '#111827', bordercolor: '#374151' },
     },
     yaxis: {
       ...plotlyDarkLayout.yaxis,
-      title: { text: 'Generation (MW)', font: { color: '#9ca3af' } },
+      title: { text: 'Generation (MW)', font: { size: 11, color: '#8b949e' } },
+      rangemode: 'tozero',
     },
     legend: {
-      ...plotlyDarkLayout.legend,
       orientation: 'h',
-      y: 1.12,
-      x: 0.5,
-      xanchor: 'center',
+      y: 1.1,
+      x: 0,
+      font: { color: '#ededed', size: 11 },
     },
-    height: 450,
   }
 
   return (
     <div className="card">
-      <Plot
-        data={traces}
-        layout={layout}
-        config={plotlyConfig}
-        className="w-full"
-        useResizeHandler
-        style={{ width: '100%', height: '100%' }}
-      />
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 pb-3 border-b border-[#242424]">
+        <div>
+          <h2 className="text-sm font-semibold text-white tracking-tight flex items-center gap-2">
+            National Wind Generation: Outturn vs Day-Ahead Forecast
+          </h2>
+          <p className="text-xs text-zinc-500 font-mono mt-0.5">
+            Half-hourly settlement periods for Great Britain (January 2026)
+          </p>
+        </div>
+        <div className="flex items-center gap-2 font-mono text-[11px]">
+          <span className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-[#1c1c1c] border border-[#282828] text-zinc-300">
+            <span className="w-2 h-0.5 bg-[#3ECF8E] inline-block" /> Actual
+          </span>
+          <span className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-[#1c1c1c] border border-[#282828] text-zinc-300">
+            <span className="w-2 h-0.5 bg-[#38BDF8] inline-block" /> Forecast
+          </span>
+        </div>
+      </div>
+      <div className="w-full">
+        <Plot data={traces} layout={layout} config={plotlyConfig} useResizeHandler className="w-full" />
+      </div>
     </div>
   )
 }

@@ -4,10 +4,10 @@ export default function SummaryTable({ data, isLoading }) {
   if (isLoading) {
     return (
       <div className="card">
-        <h3 className="text-lg font-semibold text-gray-200 mb-4">Recent Data Summary</h3>
-        <div className="animate-pulse space-y-3">
+        <h3 className="text-sm font-semibold text-white mb-3">Settlement Periods Audit Log</h3>
+        <div className="animate-pulse space-y-2">
           {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="h-8 bg-gray-700 rounded" />
+            <div key={i} className="h-7 bg-[#242424] rounded" />
           ))}
         </div>
       </div>
@@ -17,14 +17,14 @@ export default function SummaryTable({ data, isLoading }) {
   if (!data || !data.timestamps || data.timestamps.length === 0) {
     return (
       <div className="card">
-        <h3 className="text-lg font-semibold text-gray-200 mb-4">Recent Data Summary</h3>
-        <p className="text-gray-500">No data available</p>
+        <h3 className="text-sm font-semibold text-white mb-2">Settlement Periods Audit Log</h3>
+        <p className="text-zinc-500 text-xs font-mono">No data available</p>
       </div>
     )
   }
 
-  // Show the most recent 20 entries
-  const count = Math.min(20, data.timestamps.length)
+  // Show the most recent 15 entries
+  const count = Math.min(15, data.timestamps.length)
   const startIdx = data.timestamps.length - count
 
   const rows = []
@@ -45,33 +45,50 @@ export default function SummaryTable({ data, isLoading }) {
 
   return (
     <div className="card">
-      <h3 className="text-lg font-semibold text-gray-200 mb-4">Recent Data Summary</h3>
-      <div className="overflow-x-auto">
+      <div className="flex items-center justify-between mb-3 pb-2 border-b border-[#242424]">
+        <div>
+          <h3 className="text-sm font-semibold text-white">Settlement Periods Audit Log</h3>
+          <p className="text-xs text-zinc-500 font-mono mt-0.5">Most recent 15 half-hourly market delivery periods</p>
+        </div>
+        <span className="text-[11px] font-mono text-zinc-400 px-2 py-0.5 rounded bg-[#1c1c1c] border border-[#282828]">
+          Showing {rows.length} rows
+        </span>
+      </div>
+
+      <div className="overflow-x-auto rounded border border-[#262626]">
         <table>
           <thead>
             <tr>
-              <th>Timestamp</th>
-              <th>Forecast</th>
-              <th>Actual</th>
-              <th>Error</th>
-              <th>Abs Error</th>
+              <th>Delivery Start Time</th>
+              <th>Actual Outturn</th>
+              <th>Wind Forecast</th>
+              <th>Residual Error</th>
+              <th>Variance (%)</th>
             </tr>
           </thead>
           <tbody>
-            {rows.map((row, i) => (
-              <tr key={i} className="text-gray-300">
-                <td className="font-mono text-xs">{formatDateTime(row.timestamp)}</td>
-                <td className="text-blue-400">{formatMW(row.forecast, 0)}</td>
-                <td className="text-emerald-400">{formatMW(row.actual, 0)}</td>
-                <td className={
-                  row.error == null ? 'text-gray-500' :
-                  row.error > 0 ? 'text-orange-400' : 'text-cyan-400'
-                }>
-                  {row.error != null ? `${row.error > 0 ? '+' : ''}${row.error.toFixed(0)} MW` : '—'}
-                </td>
-                <td className="text-gray-300">{formatMW(row.absError, 0)}</td>
-              </tr>
-            ))}
+            {rows.map((row, idx) => {
+              const pct = row.actual ? ((row.error / row.actual) * 100).toFixed(1) : 0
+              return (
+                <tr key={idx} className="font-mono text-xs">
+                  <td className="text-zinc-300">{formatDateTime(row.timestamp)}</td>
+                  <td className="font-semibold text-[#3ECF8E]">{formatMW(row.actual)}</td>
+                  <td className="text-[#38BDF8]">{formatMW(row.forecast)}</td>
+                  <td>
+                    <span
+                      className={`inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-medium ${
+                        row.error > 0
+                          ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                          : 'bg-emerald-500/10 text-[#3ECF8E] border border-emerald-500/20'
+                      }`}
+                    >
+                      {row.error > 0 ? `+${row.error.toFixed(0)}` : row.error.toFixed(0)} MW
+                    </span>
+                  </td>
+                  <td className="text-zinc-400">{pct > 0 ? `+${pct}%` : `${pct}%`}</td>
+                </tr>
+              )
+            })}
           </tbody>
         </table>
       </div>
