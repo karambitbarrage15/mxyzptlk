@@ -45,3 +45,8 @@ yarn-error.log*
 Thumbs.db
 
 .vercel
+
+# Local recording guides (kept out of git)
+video_guide.md
+*guide*.md
+*script*
